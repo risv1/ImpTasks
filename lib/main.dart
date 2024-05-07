@@ -21,7 +21,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late Box<Task> tasksBox;
-  TextEditingController _textEditingController = TextEditingController();
+  final TextEditingController _textEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -68,7 +68,7 @@ class _MyAppState extends State<MyApp> {
                   leading: Checkbox(
                       activeColor: const Color(0x800d3257),
                       value: task.completed,
-                      onChanged: (bool? value) => onUpdateTask(index, task!)),
+                      onChanged: (bool? value) => onUpdateTask(index, task)),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: () => onDeleteTask(index),
