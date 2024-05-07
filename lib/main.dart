@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:imptasks/task.dart';
 
 void main() async {
-
+  await Hive.initFlutter();
+  Hive.registerAdapter(TaskAdapter());
+  await Hive.openBox<Task>('todo_box');
   runApp(MaterialApp(
       title: 'Todo App',
       debugShowCheckedModeBanner: false,
@@ -17,13 +20,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late List<Task> tasksBox;
+  late Box<Task> tasksBox;
   TextEditingController _textEditingController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    tasksBox = List<Task>.empty(growable: true);
+    tasksBox = Hive.box('todo_box');
   }
 
   void onAddTask() {
@@ -37,12 +40,12 @@ class _MyAppState extends State<MyApp> {
   }
 
   void onUpdateTask(int index, Task task) {
-    tasksBox[index] = Task(task.title, !task.completed);
+    tasksBox.putAt(index, Task(task.title, !task.completed));
     return;
   }
 
   void onDeleteTask(int index) {
-    tasksBox.removeAt(index);
+    tasksBox.deleteAt(index);
     return;
   }
 
@@ -53,7 +56,7 @@ class _MyAppState extends State<MyApp> {
         title: const Text('TODO'), systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       body: ValueListenableBuilder(
-        valueListenable: tasksBox.length,
+        valueListenable: tasksBox.listenable(),
         builder: (context, value, child) {
           if (tasksBox.length > 0) {
             return ListView.separated(
